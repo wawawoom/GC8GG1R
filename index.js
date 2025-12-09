@@ -17,9 +17,3 @@ browser.visit(url, function (err, _browser, status) {
     throw err.message;
   }
 });
-
-browser.visit(url2, function (err, _browser, status) {
-  if (err) {
-    throw err.message;
-  }
-});
