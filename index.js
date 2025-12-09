@@ -12,7 +12,7 @@ async function run() {
   let browser;
 
   try {
-    // Lance un navigateur headless (sans interface)
+    // Chrome intégré à Puppeteer
     browser = await puppeteer.launch({
       headless: "new",
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
@@ -20,13 +20,13 @@ async function run() {
 
     const page = await browser.newPage();
 
-    // Ajout des cookies
+    // Cookies
     await page.setCookie(
       { name: "username", value: username, domain: "wawawoom.fr" },
       { name: "password", value: password, domain: "wawawoom.fr" }
     );
 
-    console.log("Cookies définis. Visite de la page…");
+    console.log("Cookies définis. Visite...");
 
     const response = await page.goto(url, {
       waitUntil: "networkidle2",
@@ -34,20 +34,13 @@ async function run() {
     });
 
     console.log("Status HTTP :", response.status());
-    console.log("Page visitée avec succès !");
-
-    // Tu peux inspecter la page si besoin :
-    // const html = await page.content();
-    // console.log(html);
   } catch (err) {
     console.error("❌ Erreur :", err);
   } finally {
-    if (browser) {
-      await browser.close();
-    }
+    if (browser) await browser.close();
   }
 
-  console.log("=== Script terminé ===\n");
+  console.log("=== Script terminé ===");
   process.exit(0);
 }
 
