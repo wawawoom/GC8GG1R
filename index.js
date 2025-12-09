@@ -1,4 +1,4 @@
-const puppeteer = require("puppeteer");
+const Browser = require("zombie");
 
 async function run() {
   console.log("=== Script démarré à", new Date().toISOString(), "===");
@@ -6,42 +6,33 @@ async function run() {
   const url =
     "https://wawawoom.fr/geocaching/GC8GG1R/step2-dc3504d9-7d66-4a9d-982b-e161b02932d5/administrator.php";
 
-  const username = "nikolo";
-  const password = "olokin123!";
+  const browser = new Browser();
 
-  let browser;
+  // Cookies
+  browser.setCookie({
+    name: "username",
+    domain: "wawawoom.fr",
+    value: "nikolo",
+  });
+  browser.setCookie({
+    name: "password",
+    domain: "wawawoom.fr",
+    value: "olokin123!",
+  });
 
   try {
-    // Chrome intégré à Puppeteer
-    browser = await puppeteer.launch({
-      headless: "new",
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
-    });
+    console.log("Visite de l’URL…");
 
-    const page = await browser.newPage();
+    await browser.visit(url);
 
-    // Cookies
-    await page.setCookie(
-      { name: "username", value: username, domain: "wawawoom.fr" },
-      { name: "password", value: password, domain: "wawawoom.fr" }
-    );
-
-    console.log("Cookies définis. Visite...");
-
-    const response = await page.goto(url, {
-      waitUntil: "networkidle2",
-      timeout: 30000,
-    });
-
-    console.log("Status HTTP :", response.status());
+    console.log("Page visitée avec succès !");
+    console.log("Status:", browser.status || "OK");
   } catch (err) {
-    console.error("❌ Erreur :", err);
-  } finally {
-    if (browser) await browser.close();
+    console.error("❌ Erreur lors de la visite :", err);
   }
 
-  console.log("=== Script terminé ===");
-  process.exit(0);
+  console.log("=== Script terminé ===\n");
 }
 
-run();
+// Lance la fonction et quitte proprement.
+run().then(() => process.exit(0));
